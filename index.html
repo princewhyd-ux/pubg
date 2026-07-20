@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <!-- تم تحديث سياسة الأمان لتسمح بعمل السيرفر المحلي الوهمي -->
-    <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob: https://localhost:* wss://localhost:*;">
+    <!-- تم التعديل إلى http بدلاً من https لتفادي مشاكل الشهادات في الأندرويد -->
+    <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob: http://localhost:* ws://localhost:*;">
     <title>PUBG Mobile TPS</title>
     <style>
         body { 
@@ -43,11 +43,35 @@
             pointer-events: none;
             z-index: 20;
         }
+        /* تصميم صندوق عرض الأخطاء لكي نرى المشكلة بوضوح */
+        #error-log {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(255, 0, 0, 0.8);
+            color: white;
+            padding: 10px;
+            max-width: 80%;
+            font-size: 12px;
+            z-index: 9999;
+            display: none;
+        }
     </style>
+    <script>
+        // هذا الكود سيلتقط أي خطأ يمنع اللعبة من العمل ويعرضه لك على الشاشة
+        window.addEventListener('error', function(event) {
+            const errorBox = document.getElementById('error-log');
+            errorBox.style.display = 'block';
+            errorBox.innerHTML += "<b>Error:</b> " + event.message + "<br><b>File:</b> " + event.filename + "<br><b>Line:</b> " + event.lineno + "<hr>";
+        });
+    </script>
 </head>
 <body>
     <div id="instructions">حرك الأنالوك للمشي، اسحبه للآخر للركض</div>
     
+    <!-- صندوق الأخطاء -->
+    <div id="error-log"></div>
+
     <!-- منطقة الأنالوك -->
     <div id="joystick-zone"></div>
 
