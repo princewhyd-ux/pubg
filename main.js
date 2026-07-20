@@ -82,7 +82,7 @@ loaderScript.onload = () => {
         });
         
         // --- هنا تم تصغير حجم اللاعب (جربنا 0.2، إذا كان صغيراً جداً ارفعه إلى 0.4 أو 0.5) ---
-        playerModel.scale.set(0.2, 0.2, 0.2); 
+        playerModel.scale.set(0.01, 0.01, 0.01); 
         scene.add(playerModel);
 
         mixer = new THREE.AnimationMixer(playerModel);
