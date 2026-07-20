@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    
+    <!-- 1. إعدادات الشاشة القصوى للموبايل: تغطية حواف الكاميرا (Notch)، منع التقريب، ومنع تغيير الحجم -->
+    <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- 2. سياسة الأمان (CSP): مُجهزة لعمل الـ APK محلياً (Offline) بأمان وسرعة وبدون أخطاء -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: 'unsafe-inline' 'unsafe-eval'; img-src 'self' data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline';">
+    
+    <title>PUBG Mobile TPS</title>
+    
+    <style>
+        /* 3. تحسينات CSS لأعلى أداء ومنع تدخلات النظام */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background-color: #87CEEB; /* لون السماء */
+            
+            /* إيقاف تفاعلات اللمس الافتراضية للنظام (السحب للتحديث، التقريب) - ضروري جداً للألعاب */
+            touch-action: none;
+            
+            /* منع ظهور قائمة عند الضغط المطول أو تحديد النصوص (نسخ/لصق) */
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+
+            /* منع وميض الأزرار الأزرق عند النقر على الشاشة في الأندرويد */
+            -webkit-tap-highlight-color: rgba(0,0,0,0);
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            /* إجبار المعالج الرسومي (GPU) على معالجة الكانفاس لزيادة الفريمات */
+            transform: translateZ(0);
+        }
+
+        /* منطقة الأنالوك */
+        #joystick-zone {
+            position: absolute;
+            bottom: 12%; /* استخدام النسب المئوية ليتناسب مع شاشات الهواتف المختلفة */
+            left: 8%;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            z-index: 10;
+            transform: translateZ(0); /* تسريع الهاردوير */
+        }
+
+        /* واجهة المستخدم (النصوص) */
+        #ui-layer {
+            position: absolute; 
+            top: 25px; 
+            left: 50%;
+            transform: translateX(-50%) translateZ(0);
+            color: rgba(255, 255, 255, 0.9);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: rgba(0, 0, 0, 0.35);
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            backdrop-filter: blur(4px); /* إضافة لمسة ضبابية احترافية للخلفية */
+            text-align: center;
+            white-space: nowrap;
+            /* مهم جداً: هذا السطر يسمح بمرور اللمس من خلال النص لتستطيع تدوير الكاميرا حتى لو لمست النص */
+            pointer-events: none; 
+            z-index: 20;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- طبقة واجهة المستخدم -->
+    <div id="ui-layer">حرك الأنالوك للمشي، اسحبه للآخر للركض</div>
+    
+    <!-- منطقة عصا التحكم -->
+    <div id="joystick-zone"></div>
+
+    <!-- 4. استدعاء مكتبة الأنالوك محلياً من مجلد assets -->
+    <script src="assets/nipplejs.min.js"></script>
+
+    <!-- 5. خريطة استيراد Three.js لكي يتعرف المحرك على الملفات المحلية -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "./assets/three.module.js"
+            }
+        }
+    </script>
+
+    <!-- 6. تشغيل ملف اللعبة الرئيسي -->
+    <script type="module" src="main.js"></script>
+
+</body>
+</html>
