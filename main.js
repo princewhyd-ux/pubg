@@ -22,8 +22,8 @@ scene.add(dirLight);
 const textureLoader = new THREE.TextureLoader();
 textureLoader.load('./assets/ground.png', (groundTexture) => {
     groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
-    groundTexture.repeat.set(50, 50);
-    const groundGeo = new THREE.PlaneGeometry(200, 200);
+    groundTexture.repeat.set(100, 100); // زيادة التكرار لتناسب المساحة الكبيرة
+    const groundGeo = new THREE.PlaneGeometry(500, 500);
     const groundMat = new THREE.MeshStandardMaterial({ map: groundTexture });
     const ground = new THREE.Mesh(groundGeo, groundMat);
     ground.rotation.x = -Math.PI / 2;
@@ -70,8 +70,7 @@ joystickManager.on('end', () => {
     joystickData.distance = 0;
 });
 
-// --- 4. دالة تحميل المجسم (GLTFLoader مضمن داخل السيرفر العام أو باستخدام كود مدمج) ---
-// سنقوم بتحميل الـ GLTFLoader مباشرة عبر سكربت لضمان عدم وجود أخطاء مسارات
+// --- 4. تحميل المجسم وضبط الحجم الصغير المناسب ---
 const loaderScript = document.createElement('script');
 loaderScript.src = "https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js";
 loaderScript.onload = () => {
@@ -82,7 +81,8 @@ loaderScript.onload = () => {
             if (child.isMesh) child.castShadow = true;
         });
         
-        playerModel.scale.set(1, 1, 1); 
+        // --- هنا تم تصغير حجم اللاعب (جربنا 0.2، إذا كان صغيراً جداً ارفعه إلى 0.4 أو 0.5) ---
+        playerModel.scale.set(0.2, 0.2, 0.2); 
         scene.add(playerModel);
 
         mixer = new THREE.AnimationMixer(playerModel);
@@ -95,30 +95,30 @@ loaderScript.onload = () => {
 
         if(actions['idle_20']) actions['idle_20'].play();
         
-        // إخفاء صندوق الأخطاء فور نجاح التحميل
         document.getElementById('error-log').style.display = 'none';
     }, undefined, (error) => {
-        document.getElementById('error-log').innerHTML += "فشل تحميل player.glb تأكد من وجوده.<br>";
+        document.getElementById('error-log').innerHTML += "فشل تحميل player.glb<br>";
     });
 };
 document.head.appendChild(loaderScript);
 
-// --- 5. نظام الكاميرا (OrbitControls) ---
+// --- 5. نظام الكاميرا (منظور شخص ثالث حقيقي من الخلف) ---
 const controlsScript = document.createElement('script');
 controlsScript.src = "https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js";
 controlsScript.onload = () => {
     window.controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.enablePan = false;
-    controls.enableZoom = false;
+    controls.enableZoom = false; 
     controls.enableDamping = true; 
     controls.dampingFactor = 0.05;
-    controls.minDistance = 3.5;
-    controls.maxDistance = 5.0;
-    controls.maxPolarAngle = Math.PI / 2 - 0.1;
+    controls.minDistance = 2.0;
+    controls.maxDistance = 4.0;
+    controls.maxPolarAngle = Math.PI / 2 - 0.05;
 };
 document.head.appendChild(controlsScript);
 
-camera.position.set(0, 2, -5);
+// مسافة الكاميرا الابتدائية (خلف اللاعب ومرتفعة قليلاً)
+camera.position.set(0, 1.5, -3);
 
 function fadeToAction(name, duration = 0.2) {
     if (currentAction === name || !actions[name]) return;
@@ -173,8 +173,9 @@ function animate() {
 
         if (mixer) mixer.update(delta);
 
+        // نقطة تركيز الكاميرا (منتصف جسم اللاعب الصغير)
         const targetPos = playerModel.position.clone();
-        targetPos.y += 1.2; 
+        targetPos.y += 0.8; 
         if (window.controls) {
             window.controls.target.lerp(targetPos, 0.1);
         }
