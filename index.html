@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <!-- تم التعديل إلى http بدلاً من https لتفادي مشاكل الشهادات في الأندرويد -->
+    <!-- سياسة الأمان للسيرفر المحلي -->
     <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob: http://localhost:* ws://localhost:*;">
     <title>PUBG Mobile TPS</title>
     <style>
@@ -43,7 +43,6 @@
             pointer-events: none;
             z-index: 20;
         }
-        /* تصميم صندوق عرض الأخطاء لكي نرى المشكلة بوضوح */
         #error-log {
             position: absolute;
             bottom: 10px;
@@ -58,7 +57,6 @@
         }
     </style>
     <script>
-        // هذا الكود سيلتقط أي خطأ يمنع اللعبة من العمل ويعرضه لك على الشاشة
         window.addEventListener('error', function(event) {
             const errorBox = document.getElementById('error-log');
             errorBox.style.display = 'block';
@@ -68,17 +66,16 @@
 </head>
 <body>
     <div id="instructions">حرك الأنالوك للمشي، اسحبه للآخر للركض</div>
-    
-    <!-- صندوق الأخطاء -->
     <div id="error-log"></div>
-
-    <!-- منطقة الأنالوك -->
     <div id="joystick-zone"></div>
 
-    <!-- استدعاء مكتبة الأنالوك من جهازك -->
+    <!-- 1. استدعاء محرك كوردوفا الأساسي (هذا هو السطر الذي كان ينقصنا لتفعيل الإضافات) -->
+    <script src="cordova.js"></script>
+
+    <!-- 2. استدعاء مكتبة الأنالوك -->
     <script src="./assets/nipplejs.min.js"></script>
 
-    <!-- تعريف مسار Three.js لكي يتعرف عليه المحرك محلياً -->
+    <!-- 3. تعريف مسار Three.js -->
     <script type="importmap">
         {
             "imports": {
@@ -87,7 +84,7 @@
         }
     </script>
 
-    <!-- استدعاء الكود الخاص بك -->
+    <!-- 4. استدعاء كود اللعبة -->
     <script type="module" src="./main.js"></script>
 </body>
 </html>
