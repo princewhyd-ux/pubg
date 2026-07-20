@@ -3,8 +3,8 @@ name: Build Android APK
 on:
   push:
     branches:
-      - main # (تأكد أن اسم فرعك في جيتهاب هو main، وإذا كان master قم بتغيير الكلمة)
-  workflow_dispatch: # هذا السطر يضيف لك زر Play في جيتهاب لتشغيل البناء يدوياً متى شئت
+      - main
+  workflow_dispatch:
 
 jobs:
   build:
@@ -32,37 +32,36 @@ jobs:
       - name: Create Cordova Project
         run: |
           cordova create game com.pubg.tps "PUBG_TPS"
-          
-          # إفراغ مجلد www الافتراضي الخاص بكوردوفا
           rm -rf game/www/*
-          
-          # نسخ ملفات لعبتك إلى داخل التطبيق
           cp index.html game/www/
           cp main.js game/www/
           cp -r assets/ game/www/assets/
 
-      - name: Configure Game Settings (Landscape & Fullscreen)
+      - name: Configure Webview and Settings
         run: |
           cd game
-          # فتح ملف الإعدادات لإضافة التعديلات
           sed -i 's/<\/widget>//g' config.xml
           
-          # إعدادات الشاشة العرضية والكاملة ومنع الاهتزاز
+          # إعدادات الشاشة
           echo '    <preference name="Orientation" value="landscape" />' >> config.xml
           echo '    <preference name="Fullscreen" value="true" />' >> config.xml
           echo '    <preference name="KeepRunning" value="true" />' >> config.xml
           echo '    <preference name="DisallowOverscroll" value="true" />' >> config.xml
           
-          # الصلاحيات للوصول للملفات المحلية بدون قيود
+          # إعدادات السيرفر المحلي لحل مشكلة الشاشة الزرقاء (CORS)
+          echo '    <preference name="scheme" value="https" />' >> config.xml
+          echo '    <preference name="hostname" value="localhost" />' >> config.xml
+          
           echo '    <access origin="*" />' >> config.xml
           echo '    <allow-navigation href="*" />' >> config.xml
-          echo '    <allow-intent href="*" />' >> config.xml
           echo '</widget>' >> config.xml
 
-      - name: Add Android Platform
+      - name: Add Android Platform & Plugin
         run: |
           cd game
           cordova platform add android
+          # هذه الإضافة هي السحر الذي سيشغل ملفات الـ 3D داخل الهاتف
+          cordova plugin add cordova-plugin-ionic-webview
 
       - name: Build APK
         run: |
