@@ -3,65 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <!-- سياسة الأمان للسيرفر المحلي -->
     <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob: http://localhost:* ws://localhost:*;">
     <title>PUBG Mobile TPS</title>
     <style>
         body { 
-            margin: 0; 
-            padding: 0;
-            overflow: hidden; 
-            background-color: #87CEEB; 
-            touch-action: none;
-            -webkit-user-select: none;
-            user-select: none;
+            margin: 0; padding: 0; overflow: hidden; background-color: #87CEEB; 
+            touch-action: none; -webkit-user-select: none; user-select: none;
         }
-        canvas { 
-            display: block; 
-            width: 100vw; 
-            height: 100vh;
-        }
+        canvas { display: block; width: 100vw; height: 100vh; }
         #joystick-zone {
-            position: absolute;
-            bottom: 40px;
-            left: 60px;
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            z-index: 10;
+            position: absolute; bottom: 40px; left: 60px; width: 150px; height: 150px; border-radius: 50%; z-index: 10;
         }
         #instructions {
-            position: absolute; 
-            top: 15px; 
-            left: 50%;
-            transform: translateX(-50%);
-            color: white;
-            font-family: sans-serif; 
-            background: rgba(0,0,0,0.5); 
-            padding: 10px 20px;
-            border-radius: 20px;
-            pointer-events: none;
-            z-index: 20;
+            position: absolute; top: 15px; left: 50%; transform: translateX(-50%);
+            color: white; font-family: sans-serif; background: rgba(0,0,0,0.5); padding: 10px 20px; border-radius: 20px; pointer-events: none; z-index: 20;
         }
         #error-log {
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-            background: rgba(255, 0, 0, 0.8);
-            color: white;
-            padding: 10px;
-            max-width: 80%;
-            font-size: 12px;
-            z-index: 9999;
-            display: none;
+            position: absolute; bottom: 10px; right: 10px; background: rgba(255, 0, 0, 0.9);
+            color: white; padding: 10px; max-width: 90%; font-size: 14px; z-index: 9999;
         }
     </style>
+    <!-- نظام رصد الأخطاء ليخبرنا بالضبط أين المشكلة إن وجدت -->
     <script>
-        window.addEventListener('error', function(event) {
-            const errorBox = document.getElementById('error-log');
-            errorBox.style.display = 'block';
-            errorBox.innerHTML += "<b>Error:</b> " + event.message + "<br><b>File:</b> " + event.filename + "<br><b>Line:</b> " + event.lineno + "<hr>";
-        });
+        window.onerror = function(msg, url, line) {
+            document.getElementById('error-log').innerHTML += "خطأ: " + msg + "<br>السطر: " + line + "<br>";
+            return true;
+        };
     </script>
 </head>
 <body>
@@ -69,22 +36,12 @@
     <div id="error-log"></div>
     <div id="joystick-zone"></div>
 
-    <!-- 1. استدعاء محرك كوردوفا الأساسي (هذا هو السطر الذي كان ينقصنا لتفعيل الإضافات) -->
+    <!-- ملفات المحرك الأساسية محلياً -->
     <script src="cordova.js"></script>
-
-    <!-- 2. استدعاء مكتبة الأنالوك -->
+    <script src="./assets/three.min.js"></script>
     <script src="./assets/nipplejs.min.js"></script>
 
-    <!-- 3. تعريف مسار Three.js -->
-    <script type="importmap">
-        {
-            "imports": {
-                "three": "./assets/three.module.js"
-            }
-        }
-    </script>
-
-    <!-- 4. استدعاء كود اللعبة -->
-    <script type="module" src="./main.js"></script>
+    <!-- استدعاء ملف اللعبة الرئيسي بشكل عادي جداً بدون module -->
+    <script src="./main.js"></script>
 </body>
 </html>
