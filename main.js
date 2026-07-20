@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from './assets/GLTFLoader.js';
+import { OrbitControls } from './assets/OrbitControls.js';
 
 // --- 1. إعداد المشهد الأساسي ---
 const scene = new THREE.Scene();
@@ -27,7 +27,8 @@ scene.add(dirLight);
 
 // --- 2. إعداد الأرضية ---
 const textureLoader = new THREE.TextureLoader();
-const groundTexture = textureLoader.load('assets/ground.png');
+// تحميل صورة الأرضية من المجلد المحلي
+const groundTexture = textureLoader.load('./assets/ground.png');
 groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
 groundTexture.repeat.set(50, 50);
 
@@ -85,7 +86,8 @@ joystickManager.on('end', () => {
 
 // --- 5. تحميل اللاعب والانميشنات ---
 const gltfLoader = new GLTFLoader();
-gltfLoader.load('assets/player.glb', (gltf) => {
+// تحميل المجسم من المجلد المحلي
+gltfLoader.load('./assets/player.glb', (gltf) => {
     playerModel = gltf.scene;
     playerModel.traverse((child) => {
         if (child.isMesh) child.castShadow = true;
