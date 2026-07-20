@@ -1,0 +1,76 @@
+name: Build Android APK
+
+on:
+  push:
+    branches:
+      - main # (تأكد أن اسم فرعك في جيتهاب هو main، وإذا كان master قم بتغيير الكلمة)
+  workflow_dispatch: # هذا السطر يضيف لك زر Play في جيتهاب لتشغيل البناء يدوياً متى شئت
+
+jobs:
+  build:
+    name: Build APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup Java (JDK 17)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install Cordova
+        run: npm install -g cordova
+
+      - name: Create Cordova Project
+        run: |
+          cordova create game com.pubg.tps "PUBG_TPS"
+          
+          # إفراغ مجلد www الافتراضي الخاص بكوردوفا
+          rm -rf game/www/*
+          
+          # نسخ ملفات لعبتك إلى داخل التطبيق
+          cp index.html game/www/
+          cp main.js game/www/
+          cp -r assets/ game/www/assets/
+
+      - name: Configure Game Settings (Landscape & Fullscreen)
+        run: |
+          cd game
+          # فتح ملف الإعدادات لإضافة التعديلات
+          sed -i 's/<\/widget>//g' config.xml
+          
+          # إعدادات الشاشة العرضية والكاملة ومنع الاهتزاز
+          echo '    <preference name="Orientation" value="landscape" />' >> config.xml
+          echo '    <preference name="Fullscreen" value="true" />' >> config.xml
+          echo '    <preference name="KeepRunning" value="true" />' >> config.xml
+          echo '    <preference name="DisallowOverscroll" value="true" />' >> config.xml
+          
+          # الصلاحيات للوصول للملفات المحلية بدون قيود
+          echo '    <access origin="*" />' >> config.xml
+          echo '    <allow-navigation href="*" />' >> config.xml
+          echo '    <allow-intent href="*" />' >> config.xml
+          echo '</widget>' >> config.xml
+
+      - name: Add Android Platform
+        run: |
+          cd game
+          cordova platform add android
+
+      - name: Build APK
+        run: |
+          cd game
+          cordova build android
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PUBG_TPS_Game_APK
+          path: game/platforms/android/app/build/outputs/apk/debug/app-debug.apk
